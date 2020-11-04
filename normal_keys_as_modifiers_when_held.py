@@ -1,9 +1,19 @@
 # Turn normal keys into modifiers when held.
 
-from evdev import UInput, InputDevice, categorize, ecodes
+from evdev import UInput, InputDevice, categorize, ecodes, list_devices
 import time
 
-dev = InputDevice('/dev/input/event3')
+devices = [InputDevice(path) for path in list_devices()]
+
+for index, device in enumerate(devices):
+    print(str(index) + ": ", device.path, device.name, device.phys)
+
+choice = input(f'\nChoice device: [0-{len(devices)-1}]\n')
+
+# print(devices[int(choice)].path)
+
+#dev = InputDevice('/dev/input/event3')
+dev = InputDevice(devices[int(choice)].path)
 ui = UInput()
 dev.grab()
 
@@ -20,8 +30,8 @@ mod1_down_or_held = False
 mod2_down_or_held = False
 
 # Variables for calculating delay
-mod1_last_time_down = None
-mod2_last_time_down = None
+mod1_last_time_down = 0
+mod2_last_time_down = 0
 
 for event in dev.read_loop(): # reading events from keyboard
     if event.type == ecodes.EV_KEY:
