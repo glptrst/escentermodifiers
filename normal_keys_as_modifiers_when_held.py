@@ -31,7 +31,7 @@ for event in dev.read_loop(): # reading events from keyboard
             if key_event.keystate == 1:
                 mod1_down_or_held = True
                 last_input_was_special_combination = False # NECESSARY?
-                mod1_last_time_down = time.time()
+                mod1_last_time_down = time.monotonic()
             elif key_event.keystate == 2:
                 mod1_down_or_held = True
                 last_input_was_special_combination = False # NECESSARY?
@@ -41,7 +41,7 @@ for event in dev.read_loop(): # reading events from keyboard
                     ui.write(ecodes.EV_KEY, ecodes.ecodes[mod1_secondary_function], 0)
                     ui.syn()
                 else:
-                    if (time.time() - mod1_last_time_down < max_delay):
+                    if (time.monotonic() - mod1_last_time_down < max_delay):
                         ui.write(ecodes.EV_KEY, ecodes.ecodes[mod1], 1)
                         ui.write(ecodes.EV_KEY, ecodes.ecodes[mod1], 0)
                         ui.syn()
@@ -51,18 +51,17 @@ for event in dev.read_loop(): # reading events from keyboard
             if key_event.keystate == 1:
                 mod2_down_or_held = True
                 last_input_was_special_combination = False # NECESSARY?
-                mod2_last_time_down = time.time()
+                mod2_last_time_down = time.monotonic()
             elif key_event.keystate == 2:
                 mod2_down_or_held = True
                 last_input_was_special_combination = False # NECESSARY?
-                # save time for computing delay
             else: # key_event.keystate == 0
                 mod2_down_or_held = False
                 if (last_input_was_special_combination):
                     ui.write(ecodes.EV_KEY, ecodes.ecodes[mod2_secondary_function], 0)
                     ui.syn()
                 else:
-                    if (time.time() - mod2_last_time_down < max_delay):
+                    if (time.monotonic() - mod2_last_time_down < max_delay):
                         ui.write(ecodes.EV_KEY, ecodes.ecodes[mod2], 1)
                         ui.write(ecodes.EV_KEY, ecodes.ecodes[mod2], 0)
                         ui.syn()
@@ -100,10 +99,10 @@ for event in dev.read_loop(): # reading events from keyboard
             else: # key_event.keystate == 0
                 ui.write(ecodes.EV_KEY, ecodes.ecodes[key_event.keycode], 0)
                 ui.syn()
-                
+
 # BUGS:
 #
-# - reset xkb config when it starts
+# - it resets xkb config when it starts; can be avoided?
 #
 # - hold mod1, then hold mod1_secondary_function's key, release mod1,
 #   hit a key, say 'k'. The input sent is /not/
